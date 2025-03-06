@@ -28,36 +28,52 @@ This project is a Python script that analyzes Muscle-up movements in a video usi
 
 ## Planned Features / 后续功能启示
 
-We are actively working on enhancing this project. Here are some planned features and potential directions:  
-我们正在积极改进此项目，以下是一些计划中的功能和可能的扩展方向：
+- **Extended Exercise Recognition with AI Coaching**:  
+  **扩展动作识别与 AI 指导**:  
+  - **Target / 目标**: Support exercises like push-ups, squats, pull-ups, and planks with personalized coaching.  
+    支持俯卧撑、深蹲、引体向上、平板支撑等多种动作，并提供个性化指导。  
+  - **Implementation / 实现**: Enhance pose detection, train key point features, and use DeepSeek to analyze data and provide real-time feedback and advice.  
+    优化姿态检测模型，训练关键点特征，结合 DeepSeek 大模型分析动作数据，生成实时文字反馈和训练建议。  
+  - **Benefits / 收益**: Enables analysis of various exercises with technical improvement tips, enhancing form and effectiveness.  
+    用户可分析多种训练类型，获得技术改进建议，提升动作规范性和训练效果。
 
-### 1. **扩展动作识别与 AI 指导（Extended Exercise Recognition with AI Coaching）**
-- **目标**: 支持俯卧撑、深蹲、引体向上、平板支撑等多种动作，并提供个性化指导。
-- **实现**: 优化姿态检测模型，训练关键点特征，结合 DeepSeek 大模型分析动作数据，生成实时文字反馈和训练建议。
-- **收益**: 用户可分析多种训练类型，获得技术改进建议，提升动作规范性和训练效果。
+- **Repetition Counting & Quality Scoring**:  
+  **动作计数与质量评分**:  
+  - **Target / 目标**: Automatically count repetitions and score each rep (0-100) for quality.  
+    自动计数动作次数并为每次动作评分（0-100）。  
+  - **Implementation / 实现**: Detect periodic motion patterns and evaluate key point positions, angles, and symmetry against standards.  
+    检测动作周期性变化，分析关键点位置、角度和对称性是否达标。  
+  - **Benefits / 收益**: Provides clear insights into rep count and quality, helping users refine technique quickly.  
+    用户直观了解动作数量和质量，快速纠正姿势，提高训练效率。
 
-### 2. **动作计数与质量评分（Repetition Counting & Quality Scoring）**
-- **目标**: 自动计数动作次数并为每次动作评分（0-100）。
-- **实现**: 检测动作周期性变化，分析关键点位置、角度和对称性是否达标。
-- **收益**: 用户直观了解动作数量和质量，快速纠正姿势，提高训练效率。
+- **Fatigue Detection & Injury Risk Alerts**:  
+  **疲劳检测与受伤风险预警**:  
+  - **Target / 目标**: Identify fatigue (e.g., speed drop, shaky posture) and risky movements (e.g., knee collapse) to prevent injury.  
+    识别疲劳迹象（如速度下降、姿势抖动）及异常动作（如膝盖内扣），预防受伤。  
+  - **Implementation / 实现**: Analyze speed decay and joint angle anomalies, set thresholds, and use DeepSeek for warning suggestions.  
+    分析连续动作的速度衰减和关节角度异常，设置阈值并结合 DeepSeek 生成预警建议。  
+  - **Benefits / 收益**: Alerts users to rest or adjust, improving safety and reducing injury risk.  
+    提醒用户休息或调整动作，提升训练安全性，降低损伤风险。
 
-### 3. **疲劳检测与受伤风险预警（Fatigue Detection & Injury Risk Alerts）**
-- **目标**: 识别疲劳迹象（如速度下降、姿势抖动）及异常动作（如膝盖内扣），预防受伤。
-- **实现**: 分析连续动作的速度衰减和关节角度异常，设置阈值并结合 DeepSeek 生成预警建议。
-- **收益**: 提醒用户休息或调整动作，提升训练安全性，降低损伤风险。
+- **Workout Summary Report with Heart Rate Integration**:  
+  **训练总结报告与心率集成**:  
+  - **Target / 目标**: Generate a comprehensive report with metrics, heart rate analysis, and recommendations.  
+    生成包含动作指标、心率分析和建议的综合报告。  
+  - **Implementation / 实现**: Combine motion data (reps, speed, angles) with imported heart rate data, leveraging DeepSeek for PDF/HTML reports.  
+    整合动作数据（次数、速度、角度）和外部心率数据，借助 DeepSeek 生成 PDF 或 HTML 报告。  
+  - **Benefits / 收益**: Offers a full training overview, optimizing workload and recovery strategies.  
+    用户获得全面的训练评估，优化训练负荷和恢复计划。
 
-### 4. **训练总结报告与心率集成（Workout Summary Report with Heart Rate Integration）**
-- **目标**: 生成包含动作指标、心率分析和建议的综合报告。
-- **实现**: 整合动作数据（次数、速度、角度）和外部心率数据，借助 DeepSeek 生成 PDF 或 HTML 报告。
-- **收益**: 用户获得全面的训练评估，优化训练负荷和恢复计划。
+- **Progress Visualization & Caloric Burn Estimation**:  
+  **进步可视化与热量消耗估算**:  
+  - **Target / 目标**: Display progress trends and estimate caloric burn.  
+    展示训练进步趋势并估算热量消耗。  
+  - **Implementation / 实现**: Record historical data for trend charts, calculate calories using frequency, weight, and physiology formulas, with DeepSeek optimization tips.  
+    记录历史数据生成趋势图表，结合动作频率和用户体重通过运动生理学公式计算热量，DeepSeek 提供优化建议。  
+  - **Benefits / 收益**: Motivates users with visible progress while aiding energy management for fat loss or muscle gain.  
+    用户看到进步成果，保持动力，同时管理能量消耗以支持减脂或增肌目标。
 
-### 5. **进步可视化与热量消耗估算（Progress Visualization & Caloric Burn Estimation）**
-- **目标**: 展示训练进步趋势并估算热量消耗。
-- **实现**: 记录历史数据生成趋势图表，结合动作频率和用户体重通过运动生理学公式计算热量，DeepSeek 提供优化建议。
-- **收益**: 用户看到进步成果，保持动力，同时管理能量消耗以支持减脂或增肌目标。
-
-We welcome your ideas! 
-我们欢迎你的创意！。
+*We welcome your ideas to shape these enhancements! / 我们欢迎你的创意，共同完善这些功能！*
 
 ---
 
