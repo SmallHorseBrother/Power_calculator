@@ -91,7 +91,7 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
                 right_foot = landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
                 foot_y = max(left_foot.y, right_foot.y) * frame_height
                 pixel_height = abs(head.y * frame_height - foot_y)
-                scale_factor = (height_cm / 100) / pixel_height * 1.05  # 修正系数 1.05
+                scale_factor = (height_cm / 100) / pixel_height 
 
             # 绘制目标检测框（蓝色）
             x_min = min([lm.x * frame_width for lm in landmarks]) - 20
@@ -352,7 +352,7 @@ if __name__ == "__main__":
 #                 right_foot = landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
 #                 foot_y = max(left_foot.y, right_foot.y) * frame_height
 #                 pixel_height = abs(head.y * frame_height - foot_y)
-#                 scale_factor = (height_cm / 100) / pixel_height * 1.05  # 修正系数 1.05
+#                 scale_factor = (height_cm / 100) / pixel_height
 
 #             # 绘制目标检测框（蓝色）
 #             x_min = min([lm.x * frame_width for lm in landmarks]) - 20
@@ -417,7 +417,7 @@ if __name__ == "__main__":
 #                         if real_displacement >= 1.0 and 0.5 <= ascend_time <= 2.0:
 #                             work = weight_kg * 9.8 * real_displacement
 #                             power = work / ascend_time
-#                             horsepower = power / 745.7
+#                             horsepower = power / 735
 #                             muscle_up_data.append({
 #                                 'displacement': real_displacement,
 #                                 'time': ascend_time,
