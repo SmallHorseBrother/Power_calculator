@@ -72,7 +72,7 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
                 right_foot = landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
                 foot_y = max(left_foot.y, right_foot.y) * frame_height
                 pixel_height = abs(head.y * frame_height - foot_y)
-                scale_factor = (height_cm / 100) / pixel_height * 1.05
+                scale_factor = (height_cm / 100) / pixel_height 
 
             x_min = min([lm.x * frame_width for lm in landmarks]) - 20
             x_max = max([lm.x * frame_width for lm in landmarks]) + 20
