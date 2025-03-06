@@ -107,24 +107,3 @@ for i, data in enumerate(results):
   脚本假设人物面向摄像头，且遮挡较少。
 - Adjust `start_time` if the Muscle-up action begins later in the video.  
   如果 Muscle-up 动作在视频中较晚开始，请调整 `start_time`。
-
----
-
-## License / 许可
-
-This project is licensed under the MIT License. Feel free to use and modify it as needed.  
-本项目采用 MIT 许可证授权，欢迎根据需要使用和修改。
-
----
-
-## Contact / 联系方式
-
-For questions or suggestions, please open an issue on GitHub or contact the author.  
-如有问题或建议，请在 GitHub 上提交 issue 或联系作者。
-
----
-
-### 文件保存建议
-将上述内容保存为 `README.md`，放在项目根目录下。如果需要，可以将代码保存为 `muscle_up_analysis.py`，并按 `README` 中的示例调用。
-
-如果需要进一步调整（例如添加示例视频链接、截图等），请告诉我！
