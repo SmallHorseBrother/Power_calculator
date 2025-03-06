@@ -94,6 +94,8 @@ for i, data in enumerate(results):
     马力（匹）。
   - `max_velocity` (m/s): Maximum velocity during ascent.  
     上升阶段的最大速度（米/秒）。
+    
+[Watch Example Video](https://www.bilibili.com/video/BV1xk9RY3E9k/?vd_source=bc499aa91cecc9b938f44372fe471cce#reply256332236225)
 
 ---
 
