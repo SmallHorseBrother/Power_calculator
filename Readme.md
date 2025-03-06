@@ -2,7 +2,7 @@
 
 This project is a Python script that analyzes Muscle-up movements in a video using computer vision techniques. It detects key points of the human body, calculates physical metrics such as displacement, time, power, horsepower, and maximum velocity during the ascending phase of a Muscle-up, and overlays the results on the video along with a "Beast Probability" score.
 
-本项目是一个 Python 脚本，利用计算机视觉技术分析视频中的 Muscle-up（双力臂）动作（同样适用于其他大多数动作）。它检测人体关键点，计算 Muscle-up 上升阶段的位移、时间、功率、马力和最大速度等物理指标，并在视频上叠加结果以及“Beast 概率”评分。
+本项目是一个 Python 脚本，利用计算机视觉技术分析视频中的 Muscle-up（双力臂）动作（同样适用于其他大多数动作，注意修改过滤无效动作的逻辑）。它检测人体关键点，计算 Muscle-up 上升阶段的位移、时间、功率、马力和最大速度等物理指标，并在视频上叠加结果以及“Beast 概率”评分。
 
 ---
 
