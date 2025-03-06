@@ -95,8 +95,10 @@ for i, data in enumerate(results):
   - `max_velocity` (m/s): Maximum velocity during ascent.  
     上升阶段的最大速度（米/秒）。
     
-[example:muscle-up](https://www.bilibili.com/video/BV1xk9RY3E9k/?vd_source=bc499aa91cecc9b938f44372fe471cce#reply256332236225)
-[example:pull-up](https://www.bilibili.com/video/BV1jHRKYsEtb/?spm_id_from=333.1387.homepage.video_card.click&vd_source=bc499aa91cecc9b938f44372fe471cce)
+## Examples / 分析样例
+
+1. [1.7马力弹射双力臂，AI测试你的爆发力！](https://www.bilibili.com/video/BV1xk9RY3E9k/?vd_source=bc499aa91cecc9b938f44372fe471cce#reply256332236225)
+2. [28个质量爆炸的赛博引体向上（上下停顿），六七成状态。](https://www.bilibili.com/video/BV1jHRKYsEtb/?spm_id_from=333.1387.homepage.video_card.click&vd_source=bc499aa91cecc9b938f44372fe471cce)
 ---
 
 ## Notes / 注意事项
