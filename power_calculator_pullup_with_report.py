@@ -10,12 +10,20 @@ import os
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 
-def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, output_video_path='output_video.mp4', report_path='report.html'):
+def process_muscle_up_video(
+    video_path,
+    height_cm,
+    weight_kg,
+    start_time=1.0,
+    output_video_path='output_video.mp4',
+    report_path='report.html',
+    progress_callback=None,
+):
     video = cv2.VideoCapture(video_path)
     if not video.isOpened():
         raise ValueError("无法打开视频文件，请检查路径是否正确")
 
-    fps = video.get(cv2.CAP_PROP_FPS)
+    fps = video.get(cv2.CAP_PROP_FPS) or 30
     frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     start_frame = int(start_time * fps)
@@ -72,7 +80,13 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
                 right_foot = landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
                 foot_y = max(left_foot.y, right_foot.y) * frame_height
                 pixel_height = abs(head.y * frame_height - foot_y)
-                scale_factor = (height_cm / 100) / pixel_height 
+                if pixel_height <= 0:
+                    frame_num += 1
+                    out.write(frame)
+                    if progress_callback:
+                        progress_callback(frame_num)
+                    continue
+                scale_factor = (height_cm / 100) / pixel_height
 
             x_min = min([lm.x * frame_width for lm in landmarks]) - 20
             x_max = max([lm.x * frame_width for lm in landmarks]) + 20
@@ -173,6 +187,8 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
 
         out.write(frame)
         frame_num += 1
+        if progress_callback:
+            progress_callback(frame_num)
 
     video.release()
     out.release()
@@ -183,6 +199,9 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
     return muscle_up_data
 
 def generate_html_report(data, report_path, height_cm, weight_kg):
+    report_dir = os.path.dirname(os.path.abspath(report_path)) or os.getcwd()
+    os.makedirs(report_dir, exist_ok=True)
+
     if not data:
         summary = {
             'total_pull_ups': 0,
@@ -211,7 +230,7 @@ def generate_html_report(data, report_path, height_cm, weight_kg):
         plt.ylabel('Displacement (m)')
         plt.title('Displacement per Pull-up')
         plt.grid()
-        displacement_chart = 'displacement_chart.png'
+        displacement_chart = os.path.join(report_dir, 'displacement_chart.png')
         plt.savefig(displacement_chart)
         plt.close()
 
@@ -221,7 +240,7 @@ def generate_html_report(data, report_path, height_cm, weight_kg):
         plt.ylabel('Time (s)')
         plt.title('Time per Pull-up')
         plt.grid()
-        time_chart = 'time_chart.png'
+        time_chart = os.path.join(report_dir, 'time_chart.png')
         plt.savefig(time_chart)
         plt.close()
 
@@ -231,14 +250,14 @@ def generate_html_report(data, report_path, height_cm, weight_kg):
         plt.ylabel('Power (W)')
         plt.title('Power per Pull-up')
         plt.grid()
-        power_chart = 'power_chart.png'
+        power_chart = os.path.join(report_dir, 'power_chart.png')
         plt.savefig(power_chart)
         plt.close()
 
         chart_paths = {
-            'displacement': displacement_chart,
-            'time': time_chart,
-            'power': power_chart
+            'displacement': os.path.basename(displacement_chart),
+            'time': os.path.basename(time_chart),
+            'power': os.path.basename(power_chart)
         }
 
     html_template = """

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Calculator — 动作功率分析</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --border: #2a2d3e;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --text: #e2e8f0;
+    --muted: #8892a4;
+    --danger: #ff4d6d;
+    --success: #00d4aa;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+
+  header {
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.5px; }
+  header span { font-size: 1.6rem; }
+
+  main { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .card h2 { font-size: 1rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+  label { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+  input[type=number], select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input[type=number]:focus, select:focus { border-color: var(--accent); }
+
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+    position: relative;
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(108,99,255,.05); }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .drop-zone .icon { font-size: 2.5rem; margin-bottom: 10px; }
+  .drop-zone p { color: var(--muted); font-size: 0.9rem; }
+  .drop-zone .filename { color: var(--accent2); font-weight: 600; margin-top: 8px; font-size: 0.95rem; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; }
+  .btn-primary:hover { opacity: .9; }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-secondary { background: var(--border); color: var(--text); }
+  .btn-secondary:hover { opacity: .8; }
+
+  /* Progress */
+  #progress-section { display: none; }
+  .progress-bar-wrap { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; margin: 12px 0; }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 99px; transition: width .4s; width: 0%; }
+  .status-text { font-size: 0.9rem; color: var(--muted); }
+
+  /* Results */
+  #results-section { display: none; }
+  .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .metric-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 16px;
+    text-align: center;
+  }
+  .metric-card .val { font-size: 1.6rem; font-weight: 700; color: var(--accent2); }
+  .metric-card .unit { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .metric-card .lbl { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead th { color: var(--muted); font-weight: 600; text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,.02); }
+
+  .download-row { display: flex; gap: 12px; margin-top: 20px; }
+
+  .error-box { background: rgba(255,77,109,.1); border: 1px solid var(--danger); border-radius: 10px; padding: 14px 18px; color: var(--danger); font-size: 0.9rem; display: none; }
+</style>
+</head>
+<body>
+<header>
+  <span>⚡</span>
+  <h1>Power Calculator</h1>
+</header>
+
+<main>
+  <!-- Upload Form -->
+  <div class="card" id="form-section">
+    <h2>上传视频 & 参数设置</h2>
+
+    <div class="form-group full" style="margin-bottom:16px">
+      <label>视频文件</label>
+      <div class="drop-zone" id="drop-zone">
+        <input type="file" id="video-input" accept="video/*">
+        <div class="icon">🎬</div>
+        <p>拖拽视频文件到此处，或点击选择</p>
+        <div class="filename" id="filename-display" style="display:none"></div>
+      </div>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>身高 (cm)</label>
+        <input type="number" id="height" value="175" min="100" max="250" step="1">
+      </div>
+      <div class="form-group">
+        <label>体重 (kg)</label>
+        <input type="number" id="weight" value="70" min="30" max="200" step="0.5">
+      </div>
+      <div class="form-group full">
+        <label>动作类型</label>
+        <select id="mode">
+          <option value="pullup">引体向上 (Pull-up)</option>
+          <option value="muscleup">双力臂 (Muscle-up)</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <button class="btn btn-primary" id="analyze-btn" disabled onclick="startAnalysis()">
+        ▶ 开始分析
+      </button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div class="error-box" id="error-box"></div>
+
+  <!-- Progress -->
+  <div class="card" id="progress-section">
+    <h2>分析进度</h2>
+    <div class="status-text" id="status-text">正在处理...</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card" id="results-section">
+    <h2>分析结果</h2>
+
+    <div class="metrics-grid" id="avg-metrics"></div>
+
+    <h2 style="margin-top:8px;margin-bottom:14px">每组详情</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>位移 (m)</th>
+            <th>时间 (s)</th>
+            <th>功率 (W)</th>
+            <th>马力 (hp)</th>
+            <th>最大速度 (m/s)</th>
+          </tr>
+        </thead>
+        <tbody id="results-table"></tbody>
+      </table>
+    </div>
+
+    <div class="download-row">
+      <button class="btn btn-secondary" id="download-btn" onclick="downloadVideo()">⬇ 下载标注视频</button>
+      <button class="btn btn-secondary" onclick="resetForm()">↩ 重新分析</button>
+    </div>
+  </div>
+</main>
+
+<script>
+let currentJobId = null;
+let pollTimer = null;
+
+const dropZone = document.getElementById('drop-zone');
+const videoInput = document.getElementById('video-input');
+const filenameDisplay = document.getElementById('filename-display');
+const analyzeBtn = document.getElementById('analyze-btn');
+
+videoInput.addEventListener('change', () => {
+  if (videoInput.files[0]) {
+    filenameDisplay.textContent = videoInput.files[0].name;
+    filenameDisplay.style.display = 'block';
+    analyzeBtn.disabled = false;
+  }
+});
+
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    videoInput.files = dt.files;
+    filenameDisplay.textContent = file.name;
+    filenameDisplay.style.display = 'block';
+    analyzeBtn.disabled = false;
+  }
+});
+
+async function startAnalysis() {
+  const file = videoInput.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append('video', file);
+  formData.append('height', document.getElementById('height').value);
+  formData.append('weight', document.getElementById('weight').value);
+  formData.append('mode', document.getElementById('mode').value);
+
+  analyzeBtn.disabled = true;
+  showError('');
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('progress-section').style.display = 'block';
+  setProgress(5, '上传视频中...');
+
+  try {
+    const res = await fetch('/analyze', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) { showError(data.error); return; }
+    currentJobId = data.job_id;
+    setProgress(15, '视频已上传，开始分析...');
+    pollTimer = setInterval(pollStatus, 1500);
+  } catch (e) {
+    showError('上传失败: ' + e.message);
+    analyzeBtn.disabled = false;
+  }
+}
+
+async function pollStatus() {
+  if (!currentJobId) return;
+  try {
+    const res = await fetch('/status/' + currentJobId);
+    const data = await res.json();
+
+    if (data.status === 'processing' || data.status === 'queued') {
+      const p = data.progress || 15;
+      setProgress(p, p < 50 ? '正在检测姿态...' : '正在计算功率数据...');
+    } else if (data.status === 'done') {
+      clearInterval(pollTimer);
+      setProgress(100, '分析完成！');
+      setTimeout(() => showResults(data.results), 500);
+    } else if (data.status === 'error') {
+      clearInterval(pollTimer);
+      showError('分析失败: ' + data.error);
+      document.getElementById('progress-section').style.display = 'none';
+      analyzeBtn.disabled = false;
+    }
+  } catch (e) { /* ignore transient errors */ }
+}
+
+function setProgress(pct, text) {
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('status-text').textContent = text;
+}
+
+function showResults(results) {
+  document.getElementById('progress-section').style.display = 'none';
+  document.getElementById('results-section').style.display = 'block';
+
+  if (!results || results.length === 0) {
+    document.getElementById('avg-metrics').innerHTML = '<p style="color:var(--muted)">未检测到有效动作。</p>';
+    document.getElementById('results-table').innerHTML = '';
+    return;
+  }
+
+  const avg = key => (results.reduce((s, r) => s + r[key], 0) / results.length);
+  const max = key => Math.max(...results.map(r => r[key]));
+
+  const metrics = [
+    { val: results.length, unit: '次', lbl: '总组数' },
+    { val: avg('displacement').toFixed(2), unit: 'm', lbl: '平均位移' },
+    { val: avg('time').toFixed(2), unit: 's', lbl: '平均时间' },
+    { val: avg('power').toFixed(1), unit: 'W', lbl: '平均功率' },
+    { val: max('power').toFixed(1), unit: 'W', lbl: '最大功率' },
+    { val: avg('horsepower').toFixed(3), unit: 'hp', lbl: '平均马力' },
+    { val: max('max_velocity').toFixed(2), unit: 'm/s', lbl: '最大速度' },
+  ];
+
+  document.getElementById('avg-metrics').innerHTML = metrics.map(m => `
+    <div class="metric-card">
+      <div class="val">${m.val}</div>
+      <div class="unit">${m.unit}</div>
+      <div class="lbl">${m.lbl}</div>
+    </div>`).join('');
+
+  document.getElementById('results-table').innerHTML = results.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${r.displacement.toFixed(3)}</td>
+      <td>${r.time.toFixed(3)}</td>
+      <td>${r.power.toFixed(1)}</td>
+      <td>${r.horsepower.toFixed(4)}</td>
+      <td>${r.max_velocity.toFixed(3)}</td>
+    </tr>`).join('');
+}
+
+function showError(msg) {
+  const box = document.getElementById('error-box');
+  if (msg) { box.textContent = msg; box.style.display = 'block'; }
+  else { box.style.display = 'none'; }
+}
+
+function downloadVideo() {
+  if (currentJobId) window.location.href = '/download/' + currentJobId;
+}
+
+function resetForm() {
+  currentJobId = null;
+  clearInterval(pollTimer);
+  analyzeBtn.disabled = false;
+  videoInput.value = '';
+  filenameDisplay.style.display = 'none';
+  document.getElementById('results-section').style.display = 'none';
+  document.getElementById('progress-section').style.display = 'none';
+  showError('');
+}
+</script>
+</body>
+</html>

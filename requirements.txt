@@ -1,0 +1,8 @@
+opencv-python>=4.5.0
+mediapipe>=0.8.10
+numpy>=1.19.0
+matplotlib>=3.3.0
+jinja2>=2.11.0
+Pillow>=8.0.0
+flask>=2.0.0
+werkzeug>=2.0.0

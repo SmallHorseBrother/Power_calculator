@@ -7,7 +7,14 @@ import random
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 
-def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, output_video_path='output_video.mp4'):
+def process_muscle_up_video(
+    video_path,
+    height_cm,
+    weight_kg,
+    start_time=1.0,
+    output_video_path='output_video.mp4',
+    progress_callback=None,
+):
     """
     处理 muscle-up 视频，检测关键点，计算上升阶段的位移、时间、功率、马力和最大速度，
     并在画面上显示结果、目标检测框和 Beast 概率。
@@ -28,7 +35,7 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
         raise ValueError("无法打开视频文件，请检查路径是否正确")
 
     # 获取视频参数
-    fps = video.get(cv2.CAP_PROP_FPS)
+    fps = video.get(cv2.CAP_PROP_FPS) or 30
     frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
     start_frame = int(start_time * fps)
@@ -91,6 +98,12 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
                 right_foot = landmarks[mp_pose.PoseLandmark.RIGHT_FOOT_INDEX]
                 foot_y = max(left_foot.y, right_foot.y) * frame_height
                 pixel_height = abs(head.y * frame_height - foot_y)
+                if pixel_height <= 0:
+                    frame_num += 1
+                    out.write(frame)
+                    if progress_callback:
+                        progress_callback(frame_num)
+                    continue
                 scale_factor = (height_cm / 100) / pixel_height 
 
             # 绘制目标检测框（蓝色）
@@ -203,6 +216,8 @@ def process_muscle_up_video(video_path, height_cm, weight_kg, start_time=1.0, ou
         # 写入帧到输出视频
         out.write(frame)
         frame_num += 1
+        if progress_callback:
+            progress_callback(frame_num)
 
     # 释放资源
     video.release()

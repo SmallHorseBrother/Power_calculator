@@ -65,7 +65,7 @@ To run this project, you need to install the following Python libraries:
 Install them using pip:  
 使用 pip 安装：
 ```bash
-pip install opencv-python mediapipe numpy
+pip install -r requirements.txt
 ```
 
 ---
@@ -94,6 +94,13 @@ for i, data in enumerate(results):
     print(f"  Horsepower: {data['horsepower']:.2f} hp")
     print(f"  Max Velocity: {data['max_velocity']:.2f} m/s")
 ```
+
+### Web App / Web 页面运行
+```bash
+python app.py
+```
+Then open `http://127.0.0.1:5000` in your browser to upload and analyze videos.  
+然后在浏览器打开 `http://127.0.0.1:5000` 上传视频并开始分析。
 
 ### Parameters / 参数说明
 - `video_path` (str): Path to the input video file.  
